@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chatbot Độ Hợp Nhau</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f2f2f2;
+        }
+        .box {
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        h2 {
+            text-align: center;
+        }
+        input, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+        }
+        .result {
+            margin-top: 15px;
+            background: #e8f5e9;
+            padding: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <h2>🤖 Chatbot Tính Độ Hợp Nhau</h2>
+
+    <input id="name1" placeholder="Nhập tên người thứ nhất">
+    <input id="name2" placeholder="Nhập tên người thứ hai">
+
+    <button onclick="tinh()">TÍNH NGAY</button>
+
+    <div id="output" class="result"></div>
+</div>
+
+<script>
+function boDau(str) {
+    return str.normalize("NFD")
+              .replace(/[\u0300-\u036f]/g, "")
+              .replace(/\s+/g, "")
+              .toUpperCase();
+}
+
+function demChu(text) {
+    let seen = [];
+    let counts = [];
+    for (let c of text) {
+        if (!seen.includes(c)) {
+            seen.push(c);
+            counts.push(text.split(c).length - 1);
+        }
+    }
+    return counts;
+}
+
+function tachSo(n) {
+    return n.toString().split("").map(Number);
+}
+
+function congDaySo(nums) {
+    let digits = [];
+    nums.forEach(n => digits.push(...tachSo(n)));
+
+    while (digits.length > 2) {
+        let newDigits = [];
+        let i = 0, j = digits.length - 1;
+
+        while (i < j) {
+            let s = digits[i] + digits[j];
+            newDigits.push(...tachSo(s));
+            i++; j--;
+        }
+        if (i === j) newDigits.push(digits[i]);
+
+        digits = newDigits;
+    }
+    return digits;
+}
+
+function tinh() {
+    let n1 = boDau(document.getElementById("name1").value);
+    let n2 = boDau(document.getElementById("name2").value);
+
+    if (!n1 || !n2) {
+        alert("Vui lòng nhập đủ 2 tên!");
+        return;
+    }
+
+    let kq1 = congDaySo(demChu(n1 + n2));
+    let kq2 = congDaySo(demChu(n2 + n1));
+
+    document.getElementById("output").innerHTML =
+        `<b>Trường hợp 1:</b> ${kq1[0]}${kq1[1]}%<br>
+         <b>Trường hợp 2:</b> ${kq2[0]}${kq2[1]}%`;
+}
+</script>
+
+</body>
+</html>
